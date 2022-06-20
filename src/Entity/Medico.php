@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -24,4 +26,27 @@ class Medico
      * @ORM\Column(type="string")
      */
     public $nome;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Especialidade::class, inversedBy="medicos")
+     */
+    private $especialidade;
+
+
+    public function __construct()
+    {
+        $this->especialidade = new ArrayCollection();
+    }
+
+    public function getEspecialidade(): ?Especialidade
+    {
+        return $this->especialidade;
+    }
+
+    public function setEspecialidade(?Especialidade $especialidade): self
+    {
+        $this->especialidade = $especialidade;
+
+        return $this;
+    }
 }
