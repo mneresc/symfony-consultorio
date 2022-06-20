@@ -53,11 +53,58 @@ class MedicoController extends AbstractController
      */
     public function find(Request $request): Response
     {
-        $medRepo = $this->getDoctrine()->getRepository(Medico::class);
-        $medico = $medRepo->find($request->get('id'));
+        $medico = $this->getMedico($request->get('id'));
         $codRetorno = $medico ? Response::HTTP_OK: Response::HTTP_NO_CONTENT ;
 
         return new JsonResponse($medico , $codRetorno);
     }
+
+    /**
+     * @Route("/medico/{id}", methods={"PUT"})
+     */
+    public function update(Request $request):Response{
+        $corpoReq = \json_decode($request->getContent());
+        $id = $request->get('id');
+
+        $medico = $this->getMedico($id);
+
+        if(!$medico){
+            return new JsonResponse('' , Response::HTTP_NOT_FOUND);
+        }
+        $medico->crm = $corpoReq->crm;
+        $medico->nome = $corpoReq->nome;
+        $this->entityManager->flush();
+
+        return new JsonResponse($medico);
+    }
+
+
+    /**
+     * @Route("/medico/{id}", methods={"DELETE"})
+     */
+    public function remove(Request $request):Response{
+        $id = $request->get('id');
+        $medico = $this->getMedico($id);
+
+        if(!$medico){
+            return new JsonResponse('' , Response::HTTP_NOT_FOUND);
+        }
+        $this->entityManager->remove($medico);
+
+        $this->entityManager->flush();
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @param $id
+     * @return Medico|mixed|object|null
+     */
+    public function getMedico($id)
+    {
+        $medRepo = $this->getDoctrine()->getRepository(Medico::class);
+        return $medRepo->find($id);
+    }
+
 
 }
