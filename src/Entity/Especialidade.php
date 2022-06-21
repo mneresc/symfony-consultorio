@@ -6,11 +6,12 @@ use App\Repository\EspecialidadeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Internal\TentativeType;
 
 /**
  * @ORM\Entity(repositoryClass=EspecialidadeRepository::class)
  */
-class Especialidade
+class Especialidade implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -82,4 +83,11 @@ class Especialidade
     }
 
 
+    public function jsonSerialize(): array
+    {
+        return [
+          'id' => $this->getId(),
+          'descricao'=> $this->getDescricao()
+        ];
+    }
 }
