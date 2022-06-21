@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Especialidade;
 use App\Entity\Medico;
 use App\Repository\EspecialidadeRepository;
+use App\Repository\MedicoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,11 +19,13 @@ class EntidadeController extends AbstractController
      */
     private $entityManager;
     private $especialidadeRepository;
+    private $medicoRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, EspecialidadeRepository $especialidadeRepository)
+    public function __construct(EntityManagerInterface $entityManager, EspecialidadeRepository $especialidadeRepository, MedicoRepository $medicoRepository)
     {
         $this->entityManager = $entityManager;
         $this->especialidadeRepository = $especialidadeRepository;
+        $this->medicoRepository = $medicoRepository;
     }
 
     /**
@@ -33,7 +35,7 @@ class EntidadeController extends AbstractController
     {
         $corpoReq = \json_decode($request->getContent());
 
-        $especialidade = new Especialidade();
+        $especialidade = new Medico();
         $especialidade->setDescricao($corpoReq->descricao);
 
         $this->entityManager->persist($especialidade);
@@ -99,11 +101,20 @@ class EntidadeController extends AbstractController
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
+
+    /**
+     * @Route("/entidade/{especialidadeId}/medico", methods={"GET"})
+     */
+    public function findByEspecialidade(int $especialidadeId,Request $request):Response{
+        $medRepo = $this->getDoctrine()->getRepository(Medico::class);
+        return new JsonResponse($this->medicoRepository->findBy(['especialidade' => $especialidadeId]));
+    }
+
     /**
      * @param $id
      * @return Medico|mixed|object|null
      */
-    public function getEntidade($id) : ?Especialidade
+    public function getEntidade($id) : ?Medico
     {
         return $this->especialidadeRepository->find($id);
     }
