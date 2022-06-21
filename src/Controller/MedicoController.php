@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Medico;
+use App\Repository\EspecialidadeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,9 +18,12 @@ class MedicoController extends AbstractController
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    private $especialidadeRepository;
+
+    public function __construct(EntityManagerInterface $entityManager, EspecialidadeRepository $especialidadeRepository)
     {
         $this->entityManager = $entityManager;
+        $this->especialidadeRepository = $especialidadeRepository;
     }
 
     /**
@@ -30,8 +34,9 @@ class MedicoController extends AbstractController
         $corpoReq = \json_decode($request->getContent());
 
         $medico = new Medico();
-        $medico->crm = $corpoReq->crm;
-        $medico->nome = $corpoReq->nome;
+        $medico->setCrm($corpoReq->crm);
+        $medico->setNome( $corpoReq->nome);
+        $medico->setEspecialidade($this->especialidadeRepository->find($corpoReq->especialidadeId));
 
         $this->entityManager->persist($medico);
         $this->entityManager->flush();
@@ -71,8 +76,11 @@ class MedicoController extends AbstractController
         if(!$medico){
             return new JsonResponse('' , Response::HTTP_NOT_FOUND);
         }
-        $medico->crm = $corpoReq->crm;
-        $medico->nome = $corpoReq->nome;
+
+        $medico->setCrm($corpoReq->crm);
+        $medico->setNome( $corpoReq->nome);
+        $medico->setEspecialidade($this->especialidadeRepository->find($corpoReq->especialidadeId));
+
         $this->entityManager->flush();
 
         return new JsonResponse($medico);
