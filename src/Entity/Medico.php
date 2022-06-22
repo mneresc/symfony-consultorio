@@ -43,7 +43,6 @@ class Medico implements \JsonSerializable
     public function setEspecialidade(?Especialidade $especialidade): self
     {
         $this->especialidade = $especialidade;
-
         return $this;
     }
 
@@ -58,9 +57,10 @@ class Medico implements \JsonSerializable
     /**
      * @param mixed $crm
      */
-    public function setCrm($crm): void
+    public function setCrm($crm): self
     {
         $this->crm = $crm;
+        return $this;
     }
 
     /**
@@ -74,9 +74,10 @@ class Medico implements \JsonSerializable
     /**
      * @param mixed $nome
      */
-    public function setNome($nome): void
+    public function setNome($nome): self
     {
         $this->nome = $nome;
+        return $this;
     }
 
     /**
@@ -90,9 +91,10 @@ class Medico implements \JsonSerializable
     /**
      * @param mixed $id
      */
-    public function setId($id): void
+    public function setId($id): self
     {
         $this->id = $id;
+        return $this;
     }
 
     public function jsonSerialize()
@@ -101,7 +103,7 @@ class Medico implements \JsonSerializable
             'id' => $this->getId(),
             'nome' => $this->getNome(),
             'crm' => $this->getCrm(),
-            'especialidade'=> $this->getEspecialidade() ? $this->getEspecialidade()->getId() : null
+            'especialidade' => $this->getEspecialidade() ? $this->getEspecialidade()->getId() : null
         ];
     }
 
