@@ -25,21 +25,26 @@ abstract class BaseController extends AbstractController
 
     public function findAll(Request $request): Response
     {
-        return new JsonResponse($this->repository->findAll());
+        $ordenacao = $request->query->get('sort');
+        $filter = $request->query->get('filter');
+        $page = $request->query->get('page');
+        $itensPerPage = $request->query->get('itensPerPage');
+        return new JsonResponse($this->repository->findBy($filter ?: [], $ordenacao ?: [], $itensPerPage?:1, ($page - 1) * $itensPerPage));
     }
 
     public function find(int $id): Response
     {
         $item = $this->repository->find($id);
-        $codRetorno = $item ? Response::HTTP_OK: Response::HTTP_NO_CONTENT ;
+        $codRetorno = $item ? Response::HTTP_OK : Response::HTTP_NO_CONTENT;
 
-        return new JsonResponse($item , $codRetorno);
+        return new JsonResponse($item, $codRetorno);
     }
 
-    public function remove(int $id, Request $request):Response{
+    public function remove(int $id, Request $request): Response
+    {
         $entidade = $this->repository->find($id);
-        if(!$entidade){
-            return new JsonResponse('' , Response::HTTP_NOT_FOUND);
+        if (!$entidade) {
+            return new JsonResponse('', Response::HTTP_NOT_FOUND);
         }
         $this->entityManager->remove($entidade);
         $this->entityManager->flush();
@@ -54,7 +59,8 @@ abstract class BaseController extends AbstractController
         return new JsonResponse($entidade);
     }
 
-    public function update(int $id, Request $request):Response{
+    public function update(int $id, Request $request): Response
+    {
         $entidadeEnviada = $this->factory->preencher($request->getContent());
         $entidade = $this->repository->find($id);
 
