@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Factory\EntidadeFactory;
+use App\Factory\ResponseFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +30,15 @@ abstract class BaseController extends AbstractController
         $filter = $request->query->get('filter');
         $page = $request->query->get('page');
         $itensPerPage = $request->query->get('itensPerPage');
-        return new JsonResponse($this->repository->findBy($filter ?: [], $ordenacao ?: [], $itensPerPage?:1, ($page - 1) * $itensPerPage));
+
+        $resultadoConsulta = $this->repository->findBy(
+            $filter ?: [],
+            $ordenacao ?: [],
+            $itensPerPage ?: 1,
+            ($page - 1) * $itensPerPage);
+        $responseFactory = new ResponseFactory(true, $page, $itensPerPage, $resultadoConsulta);
+
+        return new JsonResponse($responseFactory);
     }
 
     public function find(int $id): Response
