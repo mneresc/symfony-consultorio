@@ -16,6 +16,7 @@ class LoginController extends AbstractController
 {
     private $repository;
     private $encoder;
+    private const ALGO_JWT = "HS256";
 
     public function __construct(UserRepository $repository, UserPasswordEncoderInterface $encoder)
     {
@@ -45,7 +46,7 @@ class LoginController extends AbstractController
             );
         }
 
-       $token =  JWT::encode(['username' => $usuario->getUsername()],'chave');
+       $token =  JWT::encode(['username' => $usuario->getUsername()],'chave',self::ALGO_JWT);
 
         return new JsonResponse([
             'access_token' => $token,
